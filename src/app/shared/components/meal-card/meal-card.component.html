@@ -1,0 +1,70 @@
+<div class="meal-card" data-aos="fade-up">
+
+  <!-- IMAGE -->
+  <div class="meal-image-wrapper">
+
+    <img
+      [src]="meal.strMealThumb"
+      [alt]="meal.strMeal"
+      class="meal-image"
+    />
+
+    <!-- Overlay -->
+    <div class="meal-overlay"></div>
+
+    <!-- Favorite -->
+    <button
+      class="favorite-btn"
+      (click)="toggleFavorite(meal)"
+    >
+      {{ isFavorite(meal.idMeal) ? '❤️' : '🤍' }}
+    </button>
+
+    <!-- Rating -->
+    <div class="rating-badge">
+      ⭐ {{ rating }}.0
+    </div>
+
+  </div>
+
+  <!-- CONTENT -->
+  <div class="meal-content">
+
+    <h3 class="meal-title">
+      {{ meal.strMeal }}
+    </h3>
+
+    <div class="meal-meta">
+
+      <span class="meal-tag dark">
+        {{ meal.strCategory || 'Food' }}
+      </span>
+
+      <span class="meal-tag primary">
+        {{ meal.strArea || 'World' }}
+      </span>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="meal-footer">
+
+      <a
+        [routerLink]="['/meal', meal.idMeal]"
+        class="details-btn"
+      >
+        Details
+      </a>
+
+      <button
+        class="add-btn"
+        (click)="addToCart(meal)"
+      >
+        🛒 Add
+      </button>
+
+    </div>
+
+  </div>
+
+</div>

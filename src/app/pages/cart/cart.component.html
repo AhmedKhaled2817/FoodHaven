@@ -1,0 +1,266 @@
+<div class="cart-page">
+
+  <div class="container">
+
+    <!-- HEADER -->
+
+    <div class="cart-header">
+
+      <div>
+        <h1 class="cart-title">
+          🛒 Your Cart
+        </h1>
+
+        <p class="cart-subtitle">
+          Delicious meals waiting for checkout
+        </p>
+      </div>
+
+      <div class="cart-count">
+        {{ cartItems().length }} Items
+      </div>
+
+    </div>
+
+    <div class="row g-5">
+
+      <!-- CART ITEMS -->
+
+      <div class="col-lg-8">
+
+        <div *ngIf="cartItems().length > 0">
+
+          <div
+            *ngFor="let item of cartItems()"
+            class="premium-cart-card"
+          >
+
+            <!-- IMAGE -->
+
+            <div class="cart-image-wrapper">
+
+              <img
+                [src]="item.meal.strMealThumb"
+                [alt]="item.meal.strMeal"
+                class="cart-image"
+              />
+
+            </div>
+
+            <!-- CONTENT -->
+
+            <div class="cart-content">
+
+              <div class="cart-top">
+
+                <div>
+
+                  <h4 class="meal-name">
+                    {{ item.meal.strMeal }}
+                  </h4>
+
+                  <div class="meal-meta">
+
+                    <span>
+                      {{ item.meal.strCategory }}
+                    </span>
+
+                    <span class="dot"></span>
+
+                    <span>
+                      {{ item.meal.strArea }}
+                    </span>
+
+                  </div>
+
+                </div>
+
+                <button
+                  class="delete-btn"
+                  (click)="removeItem(item.meal.idMeal)"
+                >
+                  ✕
+                </button>
+
+              </div>
+
+              <!-- BOTTOM -->
+
+              <div class="cart-bottom">
+
+                <!-- QUANTITY -->
+
+                <div class="quantity-box">
+
+                  <button
+                    class="qty-btn"
+                    (click)="updateQuantity(item, -1)"
+                  >
+                    −
+                  </button>
+
+                  <span>
+                    {{ item.quantity }}
+                  </span>
+
+                  <button
+                    class="qty-btn"
+                    (click)="updateQuantity(item, 1)"
+                  >
+                    +
+                  </button>
+
+                </div>
+
+                <!-- PRICE -->
+
+                <div class="item-price">
+                  ${{ item.price * item.quantity }}
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- EMPTY -->
+
+        <div
+          *ngIf="cartItems().length === 0"
+          class="empty-cart"
+        >
+
+          <div class="empty-icon">
+            🍔
+          </div>
+
+          <h2>Your cart is empty</h2>
+
+          <p>
+            Add some delicious meals to continue
+          </p>
+
+          <a
+            routerLink="/"
+            class="browse-btn"
+          >
+            Browse Menu
+          </a>
+
+        </div>
+
+      </div>
+
+      <!-- SUMMARY -->
+
+      <div class="col-lg-4">
+
+        <div class="summary-card">
+
+          <h3>
+            Order Summary
+          </h3>
+
+          <!-- COUPON -->
+
+          <div class="coupon-box">
+
+            <label>
+              Coupon Code
+            </label>
+
+            <div class="coupon-input">
+
+              <input
+                type="text"
+                [(ngModel)]="couponCode"
+                placeholder="Enter coupon..."
+              />
+
+              <button (click)="applyCoupon()">
+                Apply
+              </button>
+
+            </div>
+
+            <small *ngIf="discount() > 0">
+              🎉 Coupon Applied Successfully
+            </small>
+
+          </div>
+
+          <!-- SUMMARY ROWS -->
+
+          <div class="summary-content">
+
+            <div class="summary-row">
+              <span>Subtotal</span>
+              <strong>${{ cartService.totalPrice() }}</strong>
+            </div>
+
+            <div
+              *ngIf="discount() > 0"
+              class="summary-row success"
+            >
+              <span>Discount</span>
+
+              <strong>
+                -${{ ((cartService.totalPrice() * discount()) / 100).toFixed(2) }}
+              </strong>
+
+            </div>
+
+            <div class="summary-row">
+              <span>Delivery</span>
+              <strong>Free</strong>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="summary-row total">
+              <span>Total</span>
+
+              <strong>
+                ${{ getDiscountedTotal().toFixed(2) }}
+              </strong>
+
+            </div>
+
+          </div>
+
+          <!-- CHECKOUT -->
+
+          <button
+            class="checkout-btn"
+            [disabled]="cartItems().length === 0"
+          >
+            Proceed To Checkout
+          </button>
+
+          <!-- DELIVERY -->
+
+          <div class="delivery-card">
+
+            <div class="delivery-icon">
+              🚚
+            </div>
+
+            <div>
+              <h6>Fast Delivery</h6>
+              <p>30 - 45 mins estimated</p>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

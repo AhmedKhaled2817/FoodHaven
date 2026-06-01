@@ -1,0 +1,28 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  padding: 4rem 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+h1 {
+  color: var(--text);
+  font-weight: 900;
+}
+
+.glass-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 32px;
+  box-shadow: var(--shadow-md);
+}
+
+.glass-card h3 {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.glass-card p.text-muted {
+  color: var(--text-secondary) !important;
+}

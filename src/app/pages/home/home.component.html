@@ -1,0 +1,216 @@
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6 mb-5 mb-lg-0" data-aos="fade-right">
+        <h1 class="display-3 fw-bold mb-4" style="line-height: 1.2">
+          Savor the
+          <span
+            style="
+              background: var(--gradient-primary);
+              -webkit-background-clip: text;
+              background-clip: text;
+              -webkit-text-fill-color: transparent;
+            "
+            >Finest Flavors</span
+          >
+        </h1>
+        <p class="lead mb-5 text-muted fs-4">
+          Experience culinary excellence delivered straight to your door. Fast, fresh, and
+          unforgettable.
+        </p>
+
+        <!-- Search Bar -->
+        <div class="search-bar glass-card p-2 mb-5">
+          <div class="input-group align-items-center">
+            <span class="input-group-text bg-transparent border-0 text-muted fs-4 ps-3"> 🔍 </span>
+            <input
+              type="text"
+              class="form-control border-0 bg-transparent fs-5 py-3"
+              placeholder="What are you craving today? (e.g., Chicken, Pizza, Pasta)"
+              [(ngModel)]="searchQuery"
+              (input)="onSearchInput()"
+              (keyup.enter)="search()"
+            />
+            <!-- Clear Search Button -->
+            <button
+              *ngIf="searchQuery()"
+              class="btn btn-link text-muted border-0 p-2"
+              (click)="clearSearch()"
+            >
+              ✕
+            </button>
+            <!-- Search Button with Loading Spinner -->
+            <button
+              class="btn btn-primary btn-lg px-5 py-3"
+              (click)="search()"
+              [disabled]="searchLoading()"
+            >
+              <span *ngIf="!searchLoading()">Search</span>
+              <span
+                *ngIf="searchLoading()"
+                class="spinner-border spinner-border-sm"
+                role="status"
+                aria-hidden="true"
+              ></span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Search History -->
+        <div *ngIf="searchHistory().length > 0" class="mb-5" data-aos="fade-up">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="fw-semibold">Recent Searches</h6>
+            <button class="btn btn-sm btn-link text-muted" (click)="clearSearchHistory()">
+              Clear All
+            </button>
+          </div>
+          <div class="d-flex flex-wrap gap-2">
+            <button
+              *ngFor="let item of searchHistory()"
+              class="btn btn-outline rounded-pill px-4 py-2"
+              (click)="useSearchHistory(item)"
+            >
+              {{ item }}
+            </button>
+          </div>
+        </div>
+
+        <div class="d-flex gap-4 flex-wrap">
+          <button class="btn btn-primary btn-lg px-5">Explore Menu</button>
+          <button class="btn btn-outline btn-lg px-5">Order Now</button>
+        </div>
+      </div>
+      <div class="col-lg-6" data-aos="fade-left">
+        <div class="hero-image-wrapper position-relative">
+          <div class="floating-card-1 glass-card p-3">
+            <img
+              src="https://www.themealdb.com/images/media/meals/wyxwsp1486979827.jpg"
+              alt="Meal"
+              class="rounded"
+              style="width: 120px; height: 120px; object-fit: cover"
+            />
+          </div>
+          <div class="floating-card-2 glass-card p-3">
+            <img
+              src="https://www.themealdb.com/images/media/meals/ustsqw1468250014.jpg"
+              alt="Meal"
+              class="rounded"
+              style="width: 120px; height: 120px; object-fit: cover"
+            />
+          </div>
+          <img
+            src="https://www.themealdb.com/images/media/meals/xvsurr1511719182.jpg"
+            alt="Hero Meal"
+            class="hero-image"
+            style="max-height: 500px; object-fit: cover"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Featured Meals Section -->
+<section class="featured-section py-5">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-5" data-aos="fade-up">
+      <div>
+        <span class="text-primary fw-bold">🌟 Featured</span>
+        <h2 class="fw-bold mt-1">Today's Specials</h2>
+      </div>
+    </div>
+
+    <swiper-container
+      slides-per-view="1"
+      space-between="20"
+      pagination="true"
+      navigation="true"
+      breakpoints='{"640": {"slidesPerView": 2}, "1024": {"slidesPerView": 3}}'
+      data-aos="fade-up"
+    >
+      <swiper-slide *ngFor="let meal of featuredMeals()">
+        <app-meal-card [meal]="meal"></app-meal-card>
+      </swiper-slide>
+    </swiper-container>
+  </div>
+</section>
+
+<!-- Filters & Sort Section -->
+<section class="filters-section py-5">
+  <div class="container">
+    <div class="glass-card p-5">
+      <div class="row g-4">
+        <div class="col-lg-3 col-md-6">
+          <label class="form-label fw-semibold">Filter by Category</label>
+          <select class="form-select" [(ngModel)]="selectedCategory" (change)="filterByCategory()">
+            <option value="">All Categories</option>
+            <option *ngFor="let cat of categories()" [value]="cat.strCategory">
+              {{ cat.strCategory }}
+            </option>
+          </select>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <label class="form-label fw-semibold">Filter by Area</label>
+          <select class="form-select" [(ngModel)]="selectedArea" (change)="filterByArea()">
+            <option value="">All Areas</option>
+            <option *ngFor="let area of areas()" [value]="area.strArea">{{ area.strArea }}</option>
+          </select>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <label class="form-label fw-semibold">Sort By</label>
+          <select class="form-select" [(ngModel)]="sortBy" (change)="sortMeals()">
+            <option value="">Default</option>
+            <option value="name-asc">Name A-Z</option>
+            <option value="name-desc">Name Z-A</option>
+            <option value="rating-desc">Highest Rated</option>
+          </select>
+        </div>
+        <div class="col-lg-3 col-md-6 d-flex align-items-end gap-2">
+          <button class="btn btn-outline w-100" (click)="clearFilters()">Reset</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Meals Grid -->
+<section class="meals-section py-5">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-5" data-aos="fade-up">
+      <div>
+        <h2 class="fw-bold">Popular Meals</h2>
+        <p class="text-muted mb-0">Discover amazing recipes from around the world</p>
+      </div>
+    </div>
+
+    <!-- Skeleton Loaders -->
+    <div *ngIf="loading()" class="row g-4">
+      <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12" *ngFor="let _ of [1, 2, 3, 4]">
+        <div class="glass-card h-100">
+          <div class="skeleton" style="height: 200px; border-radius: 20px 20px 0 0"></div>
+          <div class="p-4">
+            <div class="skeleton mb-2" style="height: 24px; width: 80%; border-radius: 4px"></div>
+            <div class="skeleton mb-3" style="height: 16px; width: 50%; border-radius: 4px"></div>
+            <div class="skeleton" style="height: 40px; width: 100%; border-radius: 30px"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Meals -->
+    <div *ngIf="!loading()" class="row g-4">
+      <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12" *ngFor="let meal of meals()">
+        <app-meal-card [meal]="meal"></app-meal-card>
+      </div>
+    </div>
+
+    <div *ngIf="!loading() && meals().length === 0" class="text-center py-5" data-aos="fade-up">
+      <div class="glass-card p-5">
+        <h3 class="fw-bold mb-3">No meals found</h3>
+        <p class="text-muted mb-4">Try a different search term or reset filters</p>
+        <button class="btn btn-primary" (click)="clearSearch()">Reset Search</button>
+      </div>
+    </div>
+  </div>
+</section>

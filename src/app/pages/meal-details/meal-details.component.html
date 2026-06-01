@@ -1,0 +1,146 @@
+<div class="meal-details-page">
+  <!-- Loading State -->
+  <div class="container" *ngIf="loading()">
+    <div class="skeleton-grid">
+      <div class="skeleton skeleton-image"></div>
+      <div class="skeleton-content">
+        <div class="skeleton skeleton-title"></div>
+        <div class="skeleton skeleton-text"></div>
+        <div class="skeleton skeleton-price"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!loading() && meal()">
+    <div class="container">
+      <!-- Back Button -->
+      <button class="back-btn mb-4" routerLink="/" data-aos="fade-down">
+        <span>← Back to Home</span>
+      </button>
+
+      <div class="row align-items-center g-5 mb-5">
+        <!-- IMAGE SIDE -->
+        <div class="col-lg-6" data-aos="fade-right">
+          <div class="hero-image-card">
+            <img [src]="meal()!.strMealThumb" [alt]="meal()!.strMeal" class="hero-image" />
+
+            <div class="image-overlay"></div>
+
+            <div class="floating-rating">⭐ {{ rating }}.0</div>
+          </div>
+        </div>
+
+        <!-- CONTENT SIDE -->
+        <div class="col-lg-6" data-aos="fade-left">
+          <!-- TAGS -->
+          <div class="meal-tags">
+            <span class="premium-tag dark">
+              {{ meal()!.strCategory }}
+            </span>
+
+            <span class="premium-tag orange">
+              {{ meal()!.strArea }}
+            </span>
+          </div>
+
+          <!-- TITLE -->
+          <h1 class="meal-title">
+            {{ meal()!.strMeal }}
+          </h1>
+
+          <!-- REVIEWS -->
+          <div class="reviews-row">
+            <div class="stars">★★★★★</div>
+
+            <span> {{ reviewCount }}+ Reviews </span>
+          </div>
+
+          <!-- PRICE -->
+          <div class="price-box">${{ price }}</div>
+
+          <!-- Quantity Selector -->
+          <div class="quantity-wrapper mb-4">
+            <span class="label">Quantity:</span>
+            <div class="quantity-controls">
+              <button class="qty-btn" (click)="updateQuantity(-1)" [disabled]="quantity() === 1">
+                -
+              </button>
+              <span class="qty-value">{{ quantity() }}</span>
+              <button class="qty-btn" (click)="updateQuantity(1)">+</button>
+            </div>
+          </div>
+
+          <!-- ACTIONS -->
+          <div class="action-buttons">
+            <button class="premium-btn primary-btn" (click)="addToCart(meal()!)">
+              🛒 Add To Cart
+            </button>
+
+            <button class="premium-btn glass-btn" (click)="toggleFavorite(meal()!)">
+              {{ isFavorite(meal()!.idMeal) ? '❤️ Saved' : '🤍 Favorite' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- INGREDIENTS -->
+
+      <section class="ingredients-section" data-aos="fade-up">
+        <div class="section-header">
+          <h2>Ingredients</h2>
+        </div>
+
+        <div class="row g-4">
+          <div
+            class="col-xl-2 col-lg-3 col-md-4 col-6"
+            *ngFor="let ing of ingredients()"
+            data-aos="fade-up"
+          >
+            <div class="ingredient-card">
+              <img [src]="ing.image" [alt]="ing.name" class="ingredient-image" />
+
+              <h6>{{ ing.name }}</h6>
+
+              <span>{{ ing.measure }}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- INSTRUCTIONS -->
+
+      <section class="instructions-card" data-aos="fade-up">
+        <h2 class="mb-4">👨‍🍳 Cooking Instructions</h2>
+
+        <p>
+          {{ meal()!.strInstructions }}
+        </p>
+      </section>
+
+      <!-- VIDEO -->
+
+      <section *ngIf="youtubeUrl()" class="video-section" data-aos="fade-up">
+        <h2 class="mb-4">🎥 Video Tutorial</h2>
+
+        <div class="video-wrapper">
+          <iframe [src]="youtubeUrl()" allowfullscreen></iframe>
+        </div>
+      </section>
+
+      <!-- SIMILAR -->
+
+      <section class="similar-section" data-aos="fade-up">
+        <div class="section-header">
+          <h2>You May Also Like</h2>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-xl-3 col-lg-4 col-md-6" *ngFor="let m of similarMeals()">
+            <app-meal-card [meal]="m"></app-meal-card>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

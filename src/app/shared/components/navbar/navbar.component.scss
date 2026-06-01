@@ -1,0 +1,145 @@
+.glass-navbar {
+  background: var(--bg-glass);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 0;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.logo {
+  font-size: 1.6rem;
+}
+
+.brand {
+  font-weight: 900;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  font-size: 1.5rem;
+}
+
+.nav-link {
+  color: var(--text-secondary);
+  font-weight: 600;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: var(--primary);
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+  height: 2px;
+  width: 0;
+  background: var(--gradient-primary);
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+.badge {
+  background: var(--primary);
+  font-size: 0.65rem;
+  margin-left: 6px;
+  border-radius: 50%;
+  padding: 4px 6px;
+}
+
+.badge.cart {
+  background: var(--primary);
+}
+
+/* Theme Toggle */
+.theme-toggle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg-glass);
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+  transform: scale(1.1);
+  background: rgba(255, 107, 53, 0.15);
+  border-color: var(--primary);
+}
+
+/* Buttons */
+.btn-login,
+.btn-signup {
+  padding: 10px 20px;
+  border-radius: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.btn-login {
+  background: var(--bg-glass);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+[data-theme='light'] .btn-login {
+  background: var(--bg-alt);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btn-login:hover {
+  background: var(--bg-card);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.btn-signup {
+  background: var(--gradient-primary);
+  color: white;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-signup:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-primary);
+}
+
+.btn-logout {
+  border: none;
+  background: var(--error);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 14px;
+  font-weight: 600;
+}
+
+.user {
+  font-weight: 700;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  padding: 10px 18px;
+  background-color: var(--bg-glass);
+  border-radius: 14px;
+  border: 1px solid var(--border);
+}
+
+[data-theme='light'] .user {
+  background-color: var(--bg-alt);
+  border-color: var(--border);
+}

@@ -1,0 +1,57 @@
+<nav class="navbar navbar-expand-lg fixed-top glass-navbar">
+  <div class="container">
+    <!-- Brand -->
+    <a class="navbar-brand d-flex align-items-center gap-2" routerLink="/">
+      <span class="logo">🍜</span>
+      <span class="brand">FoodHaven</span>
+    </a>
+
+    <!-- Toggle -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+      <span></span><span></span><span></span>
+    </button>
+
+    <!-- Links -->
+    <div class="collapse navbar-collapse" id="nav">
+      <ul class="navbar-nav ms-auto align-items-center gap-3">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/">Home</a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/favorites">
+            ❤️ Favorites
+            <span class="badge" *ngIf="favoriteCount() > 0">{{ favoriteCount() }}</span>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/cart">
+            🛒 Cart
+            <span class="badge cart" *ngIf="cartCount() > 0">{{ cartCount() }}</span>
+          </a>
+        </li>
+
+        <!-- THEME TOGGLE -->
+        <li class="nav-item">
+          <button class="theme-toggle" (click)="themeService.toggleTheme()">
+            {{ themeService.theme() === 'dark' ? '☀️' : '🌙' }}
+          </button>
+        </li>
+
+        <!-- AUTH -->
+        <li class="nav-item" *ngIf="!isLoggedIn()">
+          <a class="btn-login" routerLink="/login">Login</a>
+        </li>
+
+        <li class="nav-item" *ngIf="!isLoggedIn()">
+          <a class="btn-signup" routerLink="/register">Sign Up</a>
+        </li>
+
+        <li class="nav-item" *ngIf="isLoggedIn()">
+          <a class="user" routerLink="/profile"> 👋 {{ currentUser()?.name }} </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
