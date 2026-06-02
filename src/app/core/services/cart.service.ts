@@ -8,14 +8,14 @@ import { Meal, CartItem } from '../models/meal.model';
 export class CartService {
   private platformId = inject(PLATFORM_ID);
   private cartItems = signal<CartItem[]>([]);
-  public cartCount = computed(() => 
+  public cartCount = computed(() =>
     this.cartItems().reduce((sum, item) => sum + item.quantity, 0)
   );
-  public totalPrice = computed(() => 
+  public totalPrice = computed(() =>
     this.cartItems().reduce((sum, item) => sum + (item.price * item.quantity), 0)
   );
 
-  constructor() { 
+  constructor() {
     if (isPlatformBrowser(this.platformId)) {
       this.cartItems.set(this.loadCartFromStorage());
     }
@@ -40,13 +40,13 @@ export class CartService {
     this.cartItems.update(items => {
       const existing = items.find(i => i.meal.idMeal === meal.idMeal);
       if (existing) {
-        return items.map(i => 
-          i.meal.idMeal === meal.idMeal 
-            ? { ...i, quantity: i.quantity + 1 } 
+        return items.map(i =>
+          i.meal.idMeal === meal.idMeal
+            ? { ...i, quantity: i.quantity + 1 }
             : i
         );
       }
-      return [...items, { meal, quantity: 1, price: Math.floor(Math.random() * 50) + 10 }];
+      return [...items, { meal, quantity: 1, price: Math.floor(Math.random() * 50) + 10, instructions: '' }];
     });
     this.saveCartToStorage();
   }
@@ -69,6 +69,15 @@ export class CartService {
         return i;
       }).filter(Boolean) as CartItem[];
     });
+    this.saveCartToStorage();
+  }
+
+  setItemInstructions(mealId: string, instructions: string): void {
+    this.cartItems.update(items =>
+      items.map(i =>
+        i.meal.idMeal === mealId ? { ...i, instructions } : i,
+      ),
+    );
     this.saveCartToStorage();
   }
 

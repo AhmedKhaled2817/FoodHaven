@@ -48,4 +48,5 @@ export interface CartItem {
   meal: Meal;
   quantity: number;
   price: number;
+  instructions?: string; // Optional special instructions for the order
 }

@@ -246,6 +246,40 @@
   backdrop-filter: blur(16px);
 }
 
+.premium-cart-highlights {
+  .highlight-card {
+    border-radius: 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .highlight-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-primary);
+  }
+
+  .highlight-card p {
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+  }
+
+  .highlight-card h4 {
+    color: var(--text);
+    font-size: 1.65rem;
+  }
+}
+
+.summary-top {
+  background: rgba(255, 107, 53, 0.08);
+  border: 1px solid rgba(255, 107, 53, 0.16);
+}
+
+.summary-top h4 {
+  margin-bottom: 0;
+}
+
 .summary-card h3 {
   color: var(--text);
   font-weight: 800;

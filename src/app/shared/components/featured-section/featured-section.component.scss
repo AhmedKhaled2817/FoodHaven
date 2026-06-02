@@ -1,0 +1,57 @@
+.modern-featured-section {
+  .section-label {
+    display: inline-block;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--bs-primary);
+    font-weight: 600;
+  }
+
+  .section-title {
+    font-size: clamp(2rem, 2.5vw, 3rem);
+    font-weight: 800;
+    line-height: 1.05;
+  }
+
+  .feature-card {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 32px 70px rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(18px);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+
+    &:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 40px 90px rgba(0, 0, 0, 0.14);
+    }
+  }
+
+  .feature-header {
+    .feature-icon {
+      width: 52px;
+      height: 52px;
+      display: grid;
+      place-items: center;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.16);
+      font-size: 1.35rem;
+    }
+
+    .feature-badge {
+      font-size: 0.75rem;
+      padding: 0.55rem 0.9rem;
+      letter-spacing: 0.02em;
+    }
+  }
+
+  .feature-title {
+    margin-bottom: 0.75rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+  }
+
+  .feature-description {
+    margin-bottom: 0;
+    line-height: 1.8;
+  }
+}

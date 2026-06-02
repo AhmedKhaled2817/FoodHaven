@@ -1,0 +1,223 @@
+<section class="enterprise-dashboard py-5">
+  <div class="container">
+    <div class="row align-items-end mb-5" data-aos="fade-up">
+      <div class="col-lg-8">
+        <span class="section-label">Enterprise Insights</span>
+        <h2 class="section-title">{{ pageTitle() }}</h2>
+        <p class="text-muted">Manage feature rollout, monitor revenue signals, and react to customer behavior with enterprise-grade controls.</p>
+      </div>
+      <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+        <a class="btn btn-outline-primary btn-lg" routerLink="/">Back to Marketplace</a>
+      </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+      <div class="col-md-6 col-xl-3" *ngFor="let card of dashboardCards()" data-aos="fade-up">
+        <div class="dashboard-card p-4 h-100">
+          <h5>{{ card.label }}</h5>
+          <p class="metric-value">{{ card.value }}</p>
+          <p class="text-muted mb-0">{{ card.description }}</p>
+        </div>
+      </div>
+
+      <div class="col-12" data-aos="fade-up">
+        <div class="glass-card p-4 mt-3">
+          <h5>Support Level</h5>
+          <p class="mb-0 text-muted">{{ resolvedData().supportHealth }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4 mb-5 align-items-stretch">
+      <div class="col-lg-6" data-aos="fade-up">
+        <div class="glass-card p-4 h-100 feature-flags-panel">
+          <h3 class="mb-3">Feature Flags</h3>
+          <div class="mb-3 text-muted">Live feature state is controlled here. Dark mode is applied instantly when enabled.</div>
+          <div class="d-flex flex-column gap-3 feature-flag-list">
+            <div class="feature-flag" *ngFor="let key of featureKeys">
+              <div>
+                <h6 class="mb-1">{{ key }}</h6>
+                <p class="mb-0 text-muted">
+                  {{ key === 'darkMode' ? 'Switch the app theme between light and dark mode.' : 'Toggle enterprise behavior on the fly for testing and rollout.' }}
+                </p>
+              </div>
+              <button
+                class="btn"
+                [ngClass]="{ 'btn-success': currentFeatureFlags()[key], 'btn-outline-secondary': !currentFeatureFlags()[key] }"
+                (click)="toggleFlag(key)"
+              >
+                {{ currentFeatureFlags()[key] ? (key === 'darkMode' ? 'Disable Dark Mode' : 'Enabled') : (key === 'darkMode' ? 'Enable Dark Mode' : 'Enable') }}
+              </button>
+            </div>
+          </div>
+          <div class="mt-4">
+            <span class="badge bg-secondary">Current theme: {{ themeMode() }}</span>
+          </div>
+
+          <div class="governance-panel mt-4" *ngIf="rbacEnabled() || complianceAuditEnabled()">
+            <h5 class="mb-3">Governance & Roles</h5>
+            <div *ngIf="rbacEnabled()" class="mb-3">
+              <div class="d-flex flex-wrap gap-2 align-items-center mb-2">
+                <strong>Role:</strong>
+                <button type="button" class="btn btn-sm btn-outline-primary" (click)="assignRole('Enterprise Admin')">Admin</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" (click)="assignRole('Ops Lead')">Ops Lead</button>
+                <button type="button" class="btn btn-sm btn-outline-info" (click)="assignRole('Security Officer')">Security</button>
+                <button type="button" class="btn btn-sm btn-outline-success" (click)="assignRole('Support Manager')">Support</button>
+              </div>
+              <p class="text-muted mb-2">Assigned role: <strong>{{ selectedRole() }}</strong></p>
+              <div class="d-flex flex-wrap gap-2">
+                <span class="badge bg-light text-dark" *ngFor="let permission of rolePermissions()">{{ permission }}</span>
+              </div>
+            </div>
+            <div *ngIf="complianceAuditEnabled()">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="mb-0">Compliance status</h6>
+                <button type="button" class="btn btn-sm btn-outline-dark" (click)="generateComplianceReport()">Export Report</button>
+              </div>
+              <p class="text-muted small mb-1">{{ complianceReportStatus() }}</p>
+              <p class="small text-muted mb-0">Last export: {{ lastReport() }}</p>
+            </div>
+          </div>
+
+          <div class="operational-pulse mt-4">
+            <h5 class="mb-3">Operational Pulse</h5>
+            <div class="d-flex flex-wrap gap-2 mb-3">
+              <span class="badge bg-success">Regional uptime: 99.4%</span>
+              <span class="badge bg-warning text-dark">Anomaly risk: {{ anomalyRisk() }}</span>
+              <span class="badge bg-info text-dark">Launch window: {{ launchWindow() }}</span>
+            </div>
+            <div class="region-grid">
+              <div class="region-status" *ngFor="let region of regionalStatus()">
+                <strong>{{ region.name }}</strong>
+                <p class="mb-0 text-muted">{{ region.status }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6" data-aos="fade-up">
+        <div class="glass-card p-4 h-100">
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <div>
+              <h3 class="mb-2">Smart Search Pulse</h3>
+              <p class="text-muted mb-2">Execute premium enterprise search queries with live prediction, recommendations, and fast insights.</p>
+            </div>
+            <span class="badge bg-info text-dark">Premium</span>
+          </div>
+
+          <div class="quick-actions mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="mb-0">Enterprise Quick Actions</h5>
+              <span class="badge bg-light text-dark">{{ prioritySupportEnabled() ? 'VIP support enabled' : 'Standard support' }}</span>
+            </div>
+            <div class="row g-2">
+              <div class="col-6" *ngFor="let action of quickActions">
+                <button type="button" class="btn btn-outline-light w-100 text-start action-btn" (click)="runQuickAction(action.id)">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="action-icon">{{ action.icon }}</span>
+                    <div>
+                      <strong>{{ action.label }}</strong>
+                      <div class="small text-muted">{{ action.description }}</div>
+                    </div>
+                  </div>
+                </button>
+              </div>
+            </div>
+            <div class="mt-3 text-muted" *ngIf="actionResult()">
+              {{ actionResult() }}
+            </div>
+
+            <div class="release-gates mt-3">
+              <h6>Release gates</h6>
+              <div class="d-flex flex-wrap gap-2 mt-2">
+                <button type="button" class="btn btn-sm" [ngClass]="{ 'btn-primary': releaseGate() === 'Canary', 'btn-outline-secondary': releaseGate() !== 'Canary' }" (click)="setReleaseGate('Canary')">Canary</button>
+                <button type="button" class="btn btn-sm" [ngClass]="{ 'btn-primary': releaseGate() === 'Selective', 'btn-outline-secondary': releaseGate() !== 'Selective' }" (click)="setReleaseGate('Selective')">Selective</button>
+                <button type="button" class="btn btn-sm" [ngClass]="{ 'btn-primary': releaseGate() === 'Global', 'btn-outline-secondary': releaseGate() !== 'Global' }" (click)="setReleaseGate('Global')">Global</button>
+              </div>
+              <p class="small text-muted mt-2 mb-0">{{ releaseGateStatus() }}</p>
+            </div>
+          </div>
+
+          <div class="pulse-card p-3 mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <small class="text-muted">{{ searchPulseStatus() }}</small>
+              <strong>{{ searchScore() }}</strong>
+            </div>
+            <div class="progress w-100 rounded-pill" style="height: 8px;">
+              <div class="progress-bar bg-gradient" role="progressbar" [style.width]="searchScore().split('%')[0] + '%'" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+          </div>
+
+          <div class="input-group mb-2">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Start typing a premium query"
+              [ngModel]="searchTerm()"
+              (ngModelChange)="updateSearchInput($event)"
+              (keyup.enter)="search()"
+            />
+            <button class="btn btn-primary" type="button" (click)="search()" [disabled]="isLoading()">
+              {{ isLoading() ? 'Analyzing...' : 'Search' }}
+            </button>
+          </div>
+
+          <div class="suggestions mb-3" *ngIf="searchSuggestions().length > 0">
+            <small class="text-muted">Suggested premium queries:</small>
+            <div class="d-flex flex-wrap gap-2 mt-2">
+              <button type="button" class="btn btn-sm btn-outline-secondary" *ngFor="let suggestion of searchSuggestions()" (click)="selectSuggestion(suggestion)">
+                {{ suggestion }}
+              </button>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <p class="text-muted mb-0">Results found: <strong>{{ searchResults() }}</strong></p>
+            <span class="badge bg-light text-dark">{{ themeMode() }} theme active</span>
+          </div>
+
+          <div class="search-results mb-4" *ngIf="searchMeals().length > 0">
+            <small class="text-muted">Search results</small>
+            <div class="row g-3 mt-3">
+              <div class="col-md-6" *ngFor="let meal of searchMeals()" data-aos="fade-up">
+                <app-meal-card [meal]="meal"></app-meal-card>
+              </div>
+            </div>
+          </div>
+
+          <div class="alert alert-warning py-2 mb-4" *ngIf="searchTerm().trim().length >= 3 && searchResults() === 0 && !isLoading()">
+            No premium matches found. Try another query or explore suggested keywords.
+          </div>
+
+          <div class="history-log mb-4" *ngIf="searchHistory().length > 0">
+            <small class="text-muted">Recent enterprise queries</small>
+            <div class="d-flex flex-wrap gap-2 mt-2">
+              <button type="button" class="btn btn-sm btn-outline-primary" *ngFor="let recent of searchHistory()" (click)="selectSuggestion(recent)">
+                {{ recent }}
+              </button>
+            </div>
+          </div>
+
+          <div class="event-log mt-3">
+            <h6>Recent events</h6>
+            <ul class="list-unstyled mb-0">
+              <li *ngFor="let event of analyticsService.events()">• {{ event }}</li>
+            </ul>
+          </div>
+
+          <div class="audit-trail mt-4" *ngIf="complianceAuditEnabled()">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h6 class="mb-0">Audit Trail</h6>
+              <span class="badge bg-primary">Governance</span>
+            </div>
+            <ul class="list-unstyled mb-2">
+              <li *ngFor="let audit of auditTrail()">• {{ audit }}</li>
+            </ul>
+            <p class="small text-muted mb-0">Keep track of enterprise actions, report exports, and regulatory checks.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

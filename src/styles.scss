@@ -142,6 +142,50 @@ body {
   border-color: var(--border-hover);
 }
 
+.glass-navbar {
+  background: rgba(8, 8, 13, 0.86);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.navbar-brand .logo {
+  font-size: 1.5rem;
+  transform: translateY(-1px);
+}
+
+.navbar-nav .nav-link {
+  color: var(--text-secondary);
+  transition: color 0.25s ease;
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+  color: var(--primary);
+}
+
+.btn-login,
+.btn-signup {
+  border-radius: 999px;
+  padding: 0.8rem 1.5rem;
+  transition: transform 0.25s ease, background 0.25s ease;
+}
+
+.btn-login {
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
+}
+
+.btn-signup {
+  background: var(--gradient-primary);
+  color: #fff;
+}
+
+.btn-login:hover,
+.btn-signup:hover {
+  transform: translateY(-2px);
+}
+
 .btn-primary {
   background: var(--gradient-primary);
   border: none;

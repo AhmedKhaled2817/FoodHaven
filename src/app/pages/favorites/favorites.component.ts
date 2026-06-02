@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FavoriteService } from '../../core/services/favorite.service';
 import { MealCardComponent } from '../../shared/components/meal-card/meal-card.component';
+import { LocalizationService } from '../../core/services/localization.service';
 
 @Component({
   selector: 'app-favorites',
@@ -13,5 +14,9 @@ import { MealCardComponent } from '../../shared/components/meal-card/meal-card.c
 })
 export class FavoritesComponent {
   favoriteService = inject(FavoriteService);
+  localization = inject(LocalizationService);
   favorites = this.favoriteService.getFavorites();
+
+  t = (key: string, values?: Record<string, string | number>) =>
+    this.localization.t(key, values);
 }

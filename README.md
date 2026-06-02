@@ -13,11 +13,18 @@
 - ❤️ **Favorites**: Save your favorite meals
 - 🛒 **Shopping Cart**: Add meals to cart and manage quantities
 - 🔐 **Authentication**: Register & login system with localStorage persistence
-- � **User Profile**: View your profile, statistics, and settings
-- 📦 **Order History**: Track your past orders
-- �📄 **Meal Details**: View complete instructions, ingredients, and YouTube links
-- ✨ **Smooth Animations**: Powered by AOS (Animate On Scroll) and Animate.css
-- ⚡ **Signals-based State**: Using Angular's modern Signals API for reactivity
+- 👤 **User Profile**: View your profile, loyalty tier, and premium statistics
+- 📦 **Order History**: Track your past orders and reorder favorites
+- 📄 **Meal Details**: View complete instructions, ingredient cards, and YouTube tutorials
+- ✨ **Premium UI Enhancements**: Smart recommendations, top products, loyalty progress, and advanced cart offers
+- 🚀 **Advanced Angular Features**:
+  - Standalone components
+  - Signals and computed state
+  - Route resolvers for preloaded meal details
+  - SEO and dynamic meta tags via route data
+  - Analytics page tracking and event logs
+  - Route preloading with `PreloadAllModules`
+- 🎨 **Smooth Animations**: Powered by AOS (Animate On Scroll) and Animate.css
 - 🚀 **Server-Side Rendering (SSR)**: Improved performance and SEO
 - 📱 **Progressive Web App (PWA)**: Installable on devices for native-like experience
 

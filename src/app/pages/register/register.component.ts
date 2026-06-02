@@ -11,6 +11,7 @@ import {
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
+import { LocalizationService } from '../../core/services/localization.service';
 
 // Custom validator for password match
 export function passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
@@ -30,9 +31,13 @@ export class RegisterComponent {
   auth = inject(AuthService);
   router = inject(Router);
   fb = inject(FormBuilder);
+  localization = inject(LocalizationService);
 
   registerForm: FormGroup;
   registerError = '';
+
+  t = (key: string, values?: Record<string, string | number>) =>
+    this.localization.t(key, values);
 
   constructor() {
     this.registerForm = this.fb.group(
@@ -61,7 +66,7 @@ export class RegisterComponent {
     });
 
     if (!success) {
-      this.registerError = 'Email already exists';
+      this.registerError = this.t('auth.emailExists');
       return;
     }
 

@@ -4,6 +4,7 @@ import { AuthService } from '../../core/services/auth-service';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
+import { LocalizationService } from '../../core/services/localization.service';
 
 @Component({
   selector: 'app-login',
@@ -16,9 +17,13 @@ export class LoginComponent {
   router = inject(Router);
   fb = inject(FormBuilder);
   toastr = inject(ToastrService);
+  localization = inject(LocalizationService);
 
   loginForm: FormGroup;
   loginError = '';
+
+  t = (key: string, values?: Record<string, string | number>) =>
+    this.localization.t(key, values);
 
   constructor() {
     this.loginForm = this.fb.group({
@@ -37,11 +42,11 @@ export class LoginComponent {
     const ok = this.auth.login(this.loginForm.value.email, this.loginForm.value.password);
 
     if (!ok) {
-      this.toastr.error('Invalid email or password', 'Login Failed');
+      this.toastr.error(this.t('auth.invalidLogin'), this.t('auth.loginFailed'));
       return;
     }
 
-    this.toastr.success('Welcome back!', 'Login Successful');
+    this.toastr.success(this.t('auth.welcomeBack'), this.t('auth.loginSuccessful'));
     this.router.navigate(['/']);
   }
 

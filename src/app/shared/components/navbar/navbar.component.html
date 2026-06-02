@@ -15,37 +15,43 @@
     <div class="collapse navbar-collapse" id="nav">
       <ul class="navbar-nav ms-auto align-items-center gap-3">
         <li class="nav-item">
-          <a class="nav-link" routerLink="/">Home</a>
+          <a class="nav-link" routerLink="/">{{ t('nav.home') }}</a>
         </li>
 
         <li class="nav-item">
           <a class="nav-link" routerLink="/favorites">
-            ❤️ Favorites
+            ❤️ {{ t('nav.favorites') }}
             <span class="badge" *ngIf="favoriteCount() > 0">{{ favoriteCount() }}</span>
           </a>
         </li>
 
+        <li class="nav-item" *ngIf="isLoggedIn()">
+          <a class="nav-link" routerLink="/enterprise">{{ t('nav.enterprise') }}</a>
+        </li>
+
         <li class="nav-item">
           <a class="nav-link" routerLink="/cart">
-            🛒 Cart
+            🛒 {{ t('nav.cart') }}
             <span class="badge cart" *ngIf="cartCount() > 0">{{ cartCount() }}</span>
           </a>
         </li>
 
-        <!-- THEME TOGGLE -->
         <li class="nav-item">
           <button class="theme-toggle" (click)="themeService.toggleTheme()">
             {{ themeService.theme() === 'dark' ? '☀️' : '🌙' }}
           </button>
         </li>
 
-        <!-- AUTH -->
-        <li class="nav-item" *ngIf="!isLoggedIn()">
-          <a class="btn-login" routerLink="/login">Login</a>
+        <li class="nav-item">
+          <button class="btn-language" (click)="toggleLanguage()">{{ t('nav.language') }}</button>
         </li>
 
         <li class="nav-item" *ngIf="!isLoggedIn()">
-          <a class="btn-signup" routerLink="/register">Sign Up</a>
+          <a class="btn-login" routerLink="/login">{{ t('nav.login') }}</a>
+        </li>
+
+        <li class="nav-item" *ngIf="!isLoggedIn()">
+          <a class="btn-signup" routerLink="/register">{{ t('nav.signUp') }}</a>
         </li>
 
         <li class="nav-item" *ngIf="isLoggedIn()">

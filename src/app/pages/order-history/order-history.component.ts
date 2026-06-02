@@ -1,6 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { CartService } from '../../core/services/cart.service';
+import { ToastrService } from 'ngx-toastr';
+import { Meal } from '../../core/models/meal.model';
+import { LocalizationService } from '../../core/services/localization.service';
+
+// Fix IDE caching errors
 
 interface OrderItem {
   name: string;
@@ -25,6 +31,14 @@ interface Order {
   styleUrl: './order-history.component.scss',
 })
 export class OrderHistoryComponent {
+  router = inject(Router);
+  cartService = inject(CartService);
+  toastr = inject(ToastrService);
+  localization = inject(LocalizationService);
+
+  t = (key: string, values?: Record<string, string | number>) =>
+    this.localization.t(key, values);
+
   orders: Order[] = [
     {
       id: 'ORD-001',
@@ -61,4 +75,33 @@ export class OrderHistoryComponent {
       ],
     },
   ];
+
+  totalSpent = computed(() => this.orders.reduce((sum, order) => sum + order.total, 0));
+  totalOrders = computed(() => this.orders.length);
+  favoriteItem = computed(() => {
+    const counts = this.orders.flatMap((order) => order.items).reduce<Record<string, number>>((acc, item) => {
+      acc[item.name] = (acc[item.name] ?? 0) + item.quantity;
+      return acc;
+    }, {});
+    return Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0] ?? 'No orders yet';
+  });
+
+  reorder(order: Order): void {
+    order.items.forEach((item) => {
+      const meal: Meal = {
+        idMeal: item.name,
+        strMeal: item.name,
+        strMealThumb: item.image,
+        strCategory: 'Reorder',
+        strArea: 'Historical',
+      };
+
+      for (let i = 0; i < item.quantity; i += 1) {
+        this.cartService.addToCart(meal);
+      }
+    });
+
+    this.toastr.success(this.t('orderHistory.reorderSuccess'));
+    this.router.navigate(['/cart']);
+  }
 }

@@ -8,6 +8,7 @@ import { FavoriteService } from '../../core/services/favorite.service';
 import { ToastrService } from 'ngx-toastr';
 import { Meal } from '../../core/models/meal.model';
 import { MealCardComponent } from '../../shared/components/meal-card/meal-card.component';
+import { LocalizationService } from '../../core/services/localization.service';
 import AOS from 'aos';
 
 @Component({
@@ -24,7 +25,11 @@ export class MealDetailsComponent implements OnInit {
   favoriteService = inject(FavoriteService);
   sanitizer = inject(DomSanitizer);
   toastr = inject(ToastrService);
+  localization = inject(LocalizationService);
   platformId = inject(PLATFORM_ID);
+
+  t = (key: string, values?: Record<string, string | number>) =>
+    this.localization.t(key, values);
 
   meal = signal<Meal | null>(null);
   ingredients = signal<{ name: string; measure: string; image: string }[]>([]);
@@ -42,11 +47,20 @@ export class MealDetailsComponent implements OnInit {
     if (isPlatformBrowser(this.platformId)) {
       AOS.init({ duration: 800, once: true });
     }
-    const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.loadMealDetails(id);
-      this.loadSimilarMeals();
+
+    const resolvedMeal = this.route.snapshot.data['meal'] as Meal | null;
+    const mealId = this.route.snapshot.paramMap.get('id');
+
+    if (resolvedMeal) {
+      this.setMealDetails(resolvedMeal);
+    } else if (mealId) {
+      this.loadMealDetails(mealId);
+    } else {
+      this.loading.set(false);
+      this.toastr.error(this.t('mealDetails.loadError'));
     }
+
+    this.loadSimilarMeals();
   }
 
   loadMealDetails(id: string): void {
@@ -54,19 +68,26 @@ export class MealDetailsComponent implements OnInit {
     this.mealService.getMealById(id).subscribe({
       next: (res) => {
         if (res['meals']?.[0]) {
-          this.meal.set(res['meals'][0]);
-          this.extractIngredients(res['meals'][0]);
-          if (res['meals'][0].strYoutube) {
-            this.youtubeUrl.set(this.getSafeYoutubeUrl(res['meals'][0].strYoutube));
-          }
+          this.setMealDetails(res['meals'][0]);
+        } else {
+          this.loading.set(false);
+          this.toastr.error(this.t('mealDetails.notFound'));
         }
-        this.loading.set(false);
       },
       error: () => {
         this.loading.set(false);
-        this.toastr.error('Failed to load meal details');
+        this.toastr.error(this.t('mealDetails.failedLoad'));
       },
     });
+  }
+
+  private setMealDetails(meal: Meal): void {
+    this.meal.set(meal);
+    this.loading.set(false);
+    this.extractIngredients(meal);
+    if (meal.strYoutube) {
+      this.youtubeUrl.set(this.getSafeYoutubeUrl(meal.strYoutube));
+    }
   }
 
   loadSimilarMeals(): void {
@@ -97,7 +118,7 @@ export class MealDetailsComponent implements OnInit {
     for (let i = 0; i < this.quantity(); i++) {
       this.cartService.addToCart(meal);
     }
-    this.toastr.success(`${this.quantity()}x ${meal.strMeal} added to cart!`);
+    this.toastr.success(this.t('mealDetails.addedToCart', { quantity: this.quantity(), meal: meal.strMeal }));
   }
 
   updateQuantity(delta: number): void {
@@ -111,8 +132,8 @@ export class MealDetailsComponent implements OnInit {
     this.favoriteService.toggleFavorite(meal);
     this.toastr.info(
       this.isFavorite(meal.idMeal)
-        ? `${meal.strMeal} added to favorites`
-        : `${meal.strMeal} removed from favorites`,
+        ? this.t('mealDetails.addedToFavorites', { meal: meal.strMeal })
+        : this.t('mealDetails.removedFromFavorites', { meal: meal.strMeal }),
     );
   }
 

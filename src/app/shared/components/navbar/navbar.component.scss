@@ -141,6 +141,21 @@
   box-shadow: var(--shadow-primary);
 }
 
+.btn-language {
+  padding: 10px 18px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--bg-glass);
+  color: var(--text);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-language:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
 .btn-logout {
   border: none;
   background: var(--error);

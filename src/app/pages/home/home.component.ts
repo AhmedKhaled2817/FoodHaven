@@ -1,12 +1,17 @@
-import { Component, inject, OnInit, PLATFORM_ID, signal, OnDestroy } from '@angular/core';
+import { Component, computed, inject, OnInit, PLATFORM_ID, signal, OnDestroy } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
+import { CartService } from '../../core/services/cart.service';
 import { MealService } from '../../core/services/meal.service';
 import { Meal } from '../../core/models/meal.model';
 import { MealCardComponent } from '../../shared/components/meal-card/meal-card.component';
+import { FeaturedSectionComponent } from '../../shared/components/featured-section/featured-section.component';
+import { HoverGlowDirective } from '../../shared/directives/hover-glow.directive';
 import { ToastrService } from 'ngx-toastr';
+import { PromotionService } from '../../core/services/promotion.service';
+import { LocalizationService } from '../../core/services/localization.service';
 import AOS from 'aos';
 
 // Swiper imports (optional, for carousel)
@@ -18,15 +23,20 @@ register();
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FormsModule, MealCardComponent],
+  imports: [CommonModule, FormsModule, MealCardComponent, FeaturedSectionComponent, HoverGlowDirective],
   schemas: [CUSTOM_ELEMENTS_SCHEMA], // For Swiper custom element
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
 export class HomeComponent implements OnInit, OnDestroy {
   mealService = inject(MealService);
+  cartService = inject(CartService);
   platformId = inject(PLATFORM_ID);
   toastr = inject(ToastrService);
+  localizationService = inject(LocalizationService);
+
+  t = (key: string, values?: Record<string, string | number>) =>
+    this.localizationService.t(key, values);
 
   // State using Signals
   meals = signal<Meal[]>([]);
@@ -35,13 +45,114 @@ export class HomeComponent implements OnInit, OnDestroy {
   searchQuery = signal('');
   selectedCategory = signal('');
   selectedArea = signal('');
+  selectedIngredient = signal('');
   sortBy = signal('');
   loading = signal(true);
   searchLoading = signal(false);
   searchHistory = signal<string[]>([]);
+  ingredients = signal<{ strIngredient: string }[]>([]);
 
   categories = this.mealService.categories;
   areas = this.mealService.areas;
+  promotionService = inject(PromotionService);
+
+  recommendedMeals = computed(() => {
+    const query = this.searchHistory()[0] || this.searchQuery();
+    const source = this.meals().length ? this.meals() : this.featuredMeals();
+    if (!query) {
+      return source.slice(0, 4);
+    }
+    const matches = source.filter((meal) => meal.strMeal.toLowerCase().includes(query.toLowerCase()));
+    return matches.length ? matches.slice(0, 4) : source.slice(0, 4);
+  });
+
+  flashOffers = this.promotionService.availablePromotions;
+
+  get topProductCategories() {
+    return [
+      this.t('home.categoryCake'),
+      this.t('home.categoryMuffins'),
+      this.t('home.categoryCroissant'),
+      this.t('home.categoryBread'),
+      this.t('home.categoryTart'),
+      this.t('home.categoryFavorite')
+    ];
+  }
+  selectedProductCategory = signal('Cake');
+  get topProducts() {
+    return [
+      {
+        idMeal: 'P001',
+        strMeal: 'Whole Grain Bread',
+        strMealThumb: 'https://www.themealdb.com/images/media/meals/1bsv1q1560459826.jpg',
+        strCategory: 'Bread',
+        strArea: 'Bakery',
+        badge: this.t('home.badgeBestSeller'),
+        price: 40,
+      },
+      {
+        idMeal: 'P002',
+        strMeal: 'Berry Tart',
+        strMealThumb: 'https://www.themealdb.com/images/media/meals/wvpsxx1468256321.jpg',
+        strCategory: 'Tart',
+        strArea: 'Bakery',
+        badge: this.t('home.badgePremium'),
+        price: 42,
+      },
+      {
+        idMeal: 'P003',
+        strMeal: 'Chocolate Croissant',
+        strMealThumb: 'https://www.themealdb.com/images/media/meals/xrysxv1539552180.jpg',
+        strCategory: 'Croissant',
+        strArea: 'Bakery',
+        badge: this.t('home.badgeTrending'),
+        price: 38,
+      },
+      {
+        idMeal: 'P004',
+        strMeal: 'Vanilla Muffin',
+        strMealThumb: 'https://www.themealdb.com/images/media/meals/1549542877.jpg',
+        strCategory: 'Muffins',
+        strArea: 'Bakery',
+        badge: this.t('home.badgeNew'),
+        price: 28,
+      },
+      {
+        idMeal: 'P005',
+        strMeal: 'Signature Cake',
+        strMealThumb: 'https://www.themealdb.com/images/media/meals/txsupu1511815755.jpg',
+        strCategory: 'Cake',
+        strArea: 'Bakery',
+        badge: this.t('home.badgeChefsPick'),
+        price: 55,
+      },
+    ];
+  }
+  topProductsByCategory = computed(() => {
+    const category = this.selectedProductCategory();
+    if (category === 'Favorite') {
+      return this.topProducts;
+    }
+    return this.topProducts.filter((item) => item.strCategory === category);
+  });
+
+  get heroStats() {
+    return [
+      { label: this.t('home.statPremiumOrders'), value: '250K+' },
+      { label: this.t('home.statAverageRating'), value: '4.9/5' },
+      { label: this.t('home.statTopChefs'), value: '45+' },
+      { label: this.t('home.statFastDelivery'), value: '30-45 mins' },
+    ];
+  }
+
+  get premiumBenefits() {
+    return [
+      this.t('home.benefit1'),
+      this.t('home.benefit2'),
+      this.t('home.benefit3'),
+      this.t('home.benefit4')
+    ];
+  }
 
   private destroy$ = new Subject<void>();
   private searchSubject = new Subject<string>();
@@ -80,6 +191,11 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.executeSearch(query);
   }
 
+  addToCart(meal: Meal): void {
+    this.cartService.addToCart(meal);
+    this.toastr.success(`${meal.strMeal} added to cart.`);
+  }
+
   clearSearchHistory(): void {
     this.searchHistory.set([]);
     this.saveSearchHistory();
@@ -92,6 +208,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         once: true,
       });
       this.loadSearchHistory();
+      this.loadIngredients();
     }
 
     // Set up debounced search
@@ -152,6 +269,17 @@ export class HomeComponent implements OnInit, OnDestroy {
     });
   }
 
+  loadIngredients(): void {
+    this.mealService.getIngredients().subscribe({
+      next: (res) => {
+        this.ingredients.set(res.meals || []);
+      },
+      error: () => {
+        this.toastr.warning('Could not load ingredient filters.', 'Warning');
+      },
+    });
+  }
+
   loadFeaturedMeals(): void {
     this.mealService.getRandomMeals(6).subscribe({
       next: (meals) => {
@@ -199,6 +327,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.searchQuery.set('');
     this.selectedCategory.set('');
     this.selectedArea.set('');
+    this.selectedIngredient.set('');
     this.sortBy.set('');
     this.loadRandomMeals();
   }
@@ -260,6 +389,30 @@ export class HomeComponent implements OnInit, OnDestroy {
         error: () => {
           this.loading.set(false);
           this.toastr.error('Failed to filter by area', 'Error');
+        },
+      });
+    } else {
+      this.loadRandomMeals();
+    }
+  }
+
+  filterByIngredient(): void {
+    const ingredient = this.selectedIngredient();
+    if (ingredient) {
+      this.loading.set(true);
+      this.mealService.filterByIngredient(ingredient).subscribe({
+        next: (res) => {
+          const results = res['meals'] || [];
+          this.originalMeals.set(results);
+          this.meals.set(results);
+          this.loading.set(false);
+          if (this.sortBy()) {
+            this.sortMeals();
+          }
+        },
+        error: () => {
+          this.loading.set(false);
+          this.toastr.error('Failed to filter by ingredient', 'Error');
         },
       });
     } else {

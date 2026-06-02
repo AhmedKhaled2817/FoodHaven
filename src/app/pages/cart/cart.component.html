@@ -8,18 +8,30 @@
 
       <div>
         <h1 class="cart-title">
-          🛒 Your Cart
+          🛒 {{ t('cart.yourCart') }}
         </h1>
 
         <p class="cart-subtitle">
-          Delicious meals waiting for checkout
+          {{ t('cart.delicious') }}
         </p>
       </div>
 
       <div class="cart-count">
-        {{ cartItems().length }} Items
+        {{ t('cart.items', { count: cartItems().length }) }}
       </div>
 
+    </div>
+
+    <div class="row g-3 mb-5 premium-cart-highlights" data-aos="fade-up">
+      <div class="col-md-4" *ngFor="let highlight of premiumHighlights">
+        <div
+          class="highlight-card glass-card p-4 h-100"
+          [appHoverGlow]="'rgba(255, 107, 53, 0.24)'"
+        >
+          <p class="text-muted mb-2">{{ highlight.label }}</p>
+          <h4 class="fw-bold mb-0">{{ highlight.value }}</h4>
+        </div>
+      </div>
     </div>
 
     <div class="row g-5">
@@ -33,6 +45,7 @@
           <div
             *ngFor="let item of cartItems()"
             class="premium-cart-card"
+            [appHoverGlow]="'rgba(255, 107, 53, 0.24)'"
           >
 
             <!-- IMAGE -->
@@ -120,10 +133,31 @@
 
               </div>
 
+              <div class="item-instructions mt-3">
+                <label class="form-label">{{ t('cart.specialInstructions') }}</label>
+                <textarea
+                  class="form-control"
+                  rows="2"
+                  [(ngModel)]="item.instructions"
+                  (ngModelChange)="updateInstructions(item, $event)"
+                  [placeholder]="t('cart.instructionsPlaceholder')"
+                ></textarea>
+              </div>
+
             </div>
 
           </div>
 
+        </div>
+
+        <div *ngIf="cartItems().length > 0" class="suggestions-panel glass-card p-4 mb-4">
+          <h5 class="mb-3">{{ t('cart.smartAddons') }}</h5>
+          <p class="text-muted small mb-3">{{ t('cart.addonsSubtitle') }}</p>
+          <div class="d-flex flex-wrap gap-2">
+            <button type="button" class="btn btn-sm btn-outline-primary" *ngFor="let bundle of suggestedBundles()" (click)="addSuggestedBundle(bundle)">
+              {{ bundle }}
+            </button>
+          </div>
         </div>
 
         <!-- EMPTY -->
@@ -137,17 +171,17 @@
             🍔
           </div>
 
-          <h2>Your cart is empty</h2>
+          <h2>{{ t('cart.emptyTitle') }}</h2>
 
           <p>
-            Add some delicious meals to continue
+            {{ t('cart.emptySubtitle') }}
           </p>
 
           <a
             routerLink="/"
             class="browse-btn"
           >
-            Browse Menu
+            {{ t('cart.browseMenu') }}
           </a>
 
         </div>
@@ -160,8 +194,19 @@
 
         <div class="summary-card">
 
+          <div class="summary-top glass-card p-4 mb-4">
+            <div class="d-flex align-items-center justify-content-between gap-3">
+              <div>
+                <p class="text-muted small mb-1">{{ t('cart.memberTier') }}</p>
+                <h4 class="fw-bold mb-1">{{ memberTier() }} {{ t('cart.memberTier') }}</h4>
+                <p class="text-muted mb-0">{{ t('cart.priorityOrder') }}</p>
+              </div>
+              <span class="badge bg-warning text-dark">{{ memberTier() }}</span>
+            </div>
+          </div>
+
           <h3>
-            Order Summary
+            {{ t('cart.orderSummary') }}
           </h3>
 
           <!-- COUPON -->
@@ -169,7 +214,7 @@
           <div class="coupon-box">
 
             <label>
-              Coupon Code
+              {{ t('cart.coupon') }}
             </label>
 
             <div class="coupon-input">
@@ -177,19 +222,40 @@
               <input
                 type="text"
                 [(ngModel)]="couponCode"
-                placeholder="Enter coupon..."
+                [placeholder]="t('cart.coupon')"
               />
 
               <button (click)="applyCoupon()">
-                Apply
+                {{ t('cart.apply') }}
               </button>
 
             </div>
 
-            <small *ngIf="discount() > 0">
-              🎉 Coupon Applied Successfully
+            <small class="text-success" *ngIf="discount() > 0">
+              🎉 {{ t('cart.couponApplied') }}
             </small>
+            <small class="text-danger" *ngIf="promoFeedback() && discount() === 0">
+              {{ promoFeedback() }}
+            </small>
+            <small class="text-success" *ngIf="promoFeedback() && discount() > 0">
+              {{ promoFeedback() }}
+            </small>
+          </div>
 
+          <div class="tier-summary glass-card p-3 mb-3">
+            <p class="mb-1"><strong>{{ t('cart.memberTier') }}</strong>: {{ memberTier() }}</p>
+            <p class="mb-1"><strong>{{ t('cart.points') }}</strong>: {{ currentPoints() }}</p>
+            <p class="small text-muted mb-0">{{ t('cart.earnPoints', { points: pointsEarned() }) }}</p>
+          </div>
+
+          <div class="offer-list glass-card p-3 mb-3">
+            <h5 class="mb-3">{{ t('cart.availableOffers') }}</h5>
+            <div class="d-flex flex-column gap-2">
+              <div class="offer-item" *ngFor="let offer of availableOffers()">
+                <strong>{{ offer.label }}</strong>
+                <span class="text-muted small">{{ offer.description }} • {{ offer.expires }}</span>
+              </div>
+            </div>
           </div>
 
           <!-- SUMMARY ROWS -->
@@ -197,7 +263,7 @@
           <div class="summary-content">
 
             <div class="summary-row">
-              <span>Subtotal</span>
+              <span>{{ t('cart.subtotal') }}</span>
               <strong>${{ cartService.totalPrice() }}</strong>
             </div>
 
@@ -205,7 +271,7 @@
               *ngIf="discount() > 0"
               class="summary-row success"
             >
-              <span>Discount</span>
+              <span>{{ t('cart.discount') }}</span>
 
               <strong>
                 -${{ ((cartService.totalPrice() * discount()) / 100).toFixed(2) }}
@@ -214,17 +280,17 @@
             </div>
 
             <div class="summary-row">
-              <span>Delivery</span>
-              <strong>Free</strong>
+              <span>{{ t('cart.delivery') }}</span>
+              <strong>{{ t('cart.free') }}</strong>
             </div>
 
             <div class="divider"></div>
 
             <div class="summary-row total">
-              <span>Total</span>
+              <span>{{ t('cart.total') }}</span>
 
               <strong>
-                ${{ getDiscountedTotal().toFixed(2) }}
+                ${{ finalTotal().toFixed(2) }}
               </strong>
 
             </div>
@@ -236,9 +302,14 @@
           <button
             class="checkout-btn"
             [disabled]="cartItems().length === 0"
+            (click)="checkout()"
           >
-            Proceed To Checkout
+            {{ t('cart.placeOrder') }}
           </button>
+
+          <p class="text-success mt-3" *ngIf="orderSuccess()">
+            {{ orderSuccess() }}
+          </p>
 
           <!-- DELIVERY -->
 
@@ -249,8 +320,8 @@
             </div>
 
             <div>
-              <h6>Fast Delivery</h6>
-              <p>30 - 45 mins estimated</p>
+              <h6>{{ t('cart.fastDelivery') }}</h6>
+              <p>{{ t('cart.estimate') }}</p>
             </div>
 
           </div>
